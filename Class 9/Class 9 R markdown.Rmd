@@ -1,0 +1,198 @@
+---
+title: "Class 9"
+author: "Iman Syed a18596789"
+date: "2025-11-05"
+output: html_document
+---
+
+Download a CSV file from the PDB site (accessible from “Analyze” > “PDB Statistics” > “by Experimental Method and Molecular Type”. Move this CSV file into your RStudio project and use it to answer the following questions:
+
+
+```{r}
+stats <- read.csv("Data Export Summary.csv")
+
+stats
+```
+
+Oh, these are characters not numeric...
+
+```{r}
+stats$Total
+```
+```{r pdbstats, message=FALSE}
+
+library(readr)
+stats <- read_csv ("Data Export Summary.csv")
+stats
+```
+```{r}
+n.total <- sum(stats$Total)
+n.total
+```
+Q1: What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy.
+
+```{r}
+n.xray <- sum (stats$`X-ray`)
+percent.xray <- n.xray/n.total *100
+percent.xray
+```
+Q2: What proportion of structures in the PDB are protein?
+
+```{r}
+round(stats$Total[1]/n.total*100, 2)
+```
+
+
+
+```{r}
+library(bio3d)
+hiv <- read.pdb("1hsg")
+
+hiv
+```
+
+Q3: Type HIV in the PDB website search box on the home page and determine how many HIV-1 protease structures are in the current PDB?
+
+A simple search yields that there are  3,440 Structures.
+
+
+
+Here is a screen shot of the 1hsg molecule on my software
+```{r}
+knitr::include_graphics("1HSG.png")
+
+
+```
+
+Q4: Water molecules normally have 3 atoms. Why do we see just one atom per water molecule in this structure?
+
+You see only one atom per water molecule in PDB:1HSG because only the oxygen atoms were experimentally resolved and included — the hydrogen atoms are too small to detect with X-ray crystallography and therefore are not part of the deposited structure.
+
+
+Q5: There is a critical “conserved” water molecule in the binding site. Can you identify this water molecule? What residue number does this water molecule have
+
+HOH 308 could be a conserved water molecule on the HIV-1 protease binding site because it is
+positioned closest to both the ligand and the catalytic Asp 25 residues, which is characteristic
+of the functionally important conserved water in this enzyme.
+
+
+Q6: Generate and save a figure clearly showing the two distinct chains of HIV-
+protease along with the ligand. You might also consider showing the catalytic residues ASP 25 in each chain and the critical water (we recommend “Ball & Stick” for these side-chains). Add this figure to your Quarto document.
+
+```{r}
+
+knitr::include_graphics("1HSG.3.png")
+
+```
+
+##Exploring PDB structures
+
+Package structural bioinformatics
+
+
+```{r}
+
+library(bio3d)
+
+pdb <- read.pdb("1hsg")
+
+pdb
+```
+
+```{r}
+head(hiv$atom)
+```
+
+Extracting sequence
+
+```{r}
+pdbseq(hiv)
+```
+
+##Quick PDB visualization in R
+
+
+using the : install.packages("pak")
+            pak::pak("bioboot/bio3dview")
+            install.packages("NGLVieweR")
+            
+            
+
+```{r}
+#Unable to load bio3view dataset due to technical error in my computer- however I did use the install packages as instructed in class
+
+library(bio3dview)
+library(NGLVieweR)
+
+view.pdb(pdb) |>
+  setSpin()
+```
+
+
+You can also customize the display in many ways with minimal code. For example, lets custom color the chains and highlight some key residues as spacefill/vdw:
+
+
+```{r}
+# Select the important ASP 25 residue
+sele <- atom.select(pdb, resno=25)
+
+# and highlight them in spacefill representation
+view.pdb(pdb, cols=c("navy","teal"), 
+         highlight = sele,
+         highlight.style = "spacefill") |>
+  setRock()
+```
+
+##Predicting functional motions of a single structure
+Let’s read a new PDB structure of Adenylate Kinase and perform Normal mode analysis.
+
+```{r}
+adk <- read.pdb("6s36")
+adk
+```
+
+
+We can run a bioninfomatics calculation to predict protein dynamics - i.e. functional motions.
+
+We will use the 'nma()' function:
+
+```{r}
+m <- nma(adk)
+plot(m)
+```
+```{r}
+mktrj(m, file="adk_m7.pdb")
+
+```
+
+
+
+```{r}
+view.nma(m, pdb=adk)
+```
+
+```{r}
+# Install packages in the R console NOT your Rmd/Quarto file
+#install.packages("bio3d")
+#install.packages("NGLVieweR")
+#install.packages("pak")
+#pak::pak("bioboot/bio3dview")
+#install.packages("BiocManager")
+#BiocManager::install("msa")
+```
+
+
+
+##4. Comparative structure analysis of Adenylate Kinase
+
+```{r}
+library(bio3d)
+aa <- get.seq("1ake_A")
+
+aa
+```
+
+
+
+
+

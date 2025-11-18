@@ -1,0 +1,8 @@
+execute:
+  r:
+    path: "C:/Program Files (x86)/R/R-4.5.1/bin/x64/Rscript.exe"
+
+format:
+  html:
+    toc: true
+    theme: cosmo

@@ -1,0 +1,222 @@
+---
+title: "Lab 5: Data Viz with ggplot"
+author: "Iman Syed (A18596789)"
+format: html
+---
+
+Today we are exploring the "ggplot" package and how to make nice figures in R.
+
+There are lots of ways to make figures and plots in R.These include:- 
+-so called "base" R
+- and add a package like **ggplot2**
+
+here is a simple "base" R plot.
+
+
+
+
+```{r}
+options(ggrepel.max.overlaps = Inf)
+
+head(cars)
+```
+
+We can simply pass to the `plot()~ function
+
+```{r}
+plot(cars)
+```
+
+Key point: Base R is quick but not so nice and simple looking in some folks eyes
+
+Lets see how we can plot this with **ggplot2**
+
+```{r}
+library(ggplot2)
+ggplot(cars)
+
+```
+
+So an error may pop up, so Ist you need to install an add-on package. for this we use the `install.packages()` function. however, we do this in the CONSOLE, NOT our report**
+
+2nd we need to load the package with the `library()` function everytime we want to use it.
+
+```{r}
+
+ggplot(cars)
+```
+Every ggplot is composed of at least 3 layers:
+
+-**data** (i.e a data.frame with the things you want to plot),
+-aesthetics **aes()** that map the columns of data to your plot features 
+-geoms like **geom_point()** that sort hoe the plot appears
+
+```{r}
+ggplot(cars)+
+  aes(x= speed, y=dist) +
+  geom_abline()
+```
+
+
+Lest add more layers to our ggplot
+add a line shoing the relationship between x and y
+
+
+```{r}
+ggplot(cars)+
+  aes(x=speed, y=dist)+
+  geom_point()+   #this causes points to show on the graph
+  geom_smooth (method ="lm", se= FALSE) +   # geom_smooth adds a trendline, (method ="lm", se= FALSE) makes it straight
+  labs(title="Silly plot of Speed vs Stopping distance")
+```
+Going Further:
+
+Read some genomic data into the report
+
+
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+head(genes)
+```
+
+Q1:How many genes are in the data set?
+
+
+```{r}
+nrow(genes)   #counts how many rows in a data set
+```
+```{r}
+ncol(genes)   #counts how many rows are in a data set
+```
+
+
+
+
+Q2: how many up regualated genes are there?
+
+```{r}
+sum(genes$State == "up")
+```
+
+a useful function for counting up occurrances of things in a vector is the table function
+
+```{r}
+table (genes$State)
+```
+
+Make a v1 figure:
+
+
+# Template for plots:
+
+```{r}
+
+
+p <- ggplot(genes) +
+  aes(x= Condition1,y=Condition2, col= State)+   # the col=State function gives your plots colours
+  geom_point()
+  
+  
+p
+```
+
+Now we can customize the colors using this function:
+
+```{r}
+p + scale_colour_manual( values=c("purple","green","cyan") )
+```
+
+After changing the colors, we can add labels and more layers:
+
+```{r}
+p + scale_colour_manual(values=c("purple","green","cyan")) +
+    labs(title="Gene Expresion Changes Upon Drug Treatment",
+         x="Control (no drug) ",
+         y="Drug Treatment")
+```
+
+
+Section 7: More Plotting examples
+
+Read in gapminder dataset:
+```{r}
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+
+gapminder <- read.delim(url)
+
+```
+
+Lets take a little look at this dataset
+
+```{r}
+head(gapminder, 3)  #top of the data set in alphabetical order
+```
+
+
+```{r}
+tail( gapminder, 3) #tail of the data set in alphabetical order
+```
+
+Q4: How many different country values are in this dataset?
+
+```{r}
+# nrow() does not work here, because many countries are repeated in rows!
+length(table(gapminder$country))
+```
+Q5:How many different continents values are in this dataset?
+
+```{r}
+
+#we can use the same way as Q4, however you can use a more efficient unique() function
+
+unique(gapminder$continent)
+
+```
+
+Making a rough plot of our data
+
+```{r}
+ggplot(gapminder)+
+  aes(gdpPercap,lifeExp)+
+  geom_point()
+```
+
+Making the graphics prettier!!
+
+
+```{r}
+ggplot(gapminder)+
+  aes(gdpPercap,lifeExp,
+  col=continent, label=country,)+
+  geom_text()
+  
+  
+```
+I can use the **ggrepel** package to make more sensible lables here.
+
+```{r}
+library(ggrepel)
+
+ggplot(gapminder)+
+  aes(gdpPercap, lifeExp, col= continent, label= country) +
+  geom_point()+ 
+  geom_text_repel() # only loads text that is not overlapping
+  
+```
+
+
+I want a separate pannel per continent:
+```{r}
+
+library(ggrepel)
+
+ggplot(gapminder)+
+  aes(gdpPercap, lifeExp, col= continent, label= country) +
+  geom_point()+
+  facet_wrap(~continent)
+
+```
+Q6: What are the main advantages of ggplot over base R plot?
+
