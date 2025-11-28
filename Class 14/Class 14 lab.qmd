@@ -1,0 +1,32 @@
+---
+title: "Class 14: RNASeq mini project"
+author: "Iman Syed A18596789"
+format: html
+toc: true
+---
+
+##Background
+
+##Data Import
+
+Reading the `counts` and `metadata` CSV files
+
+Check on data structure
+
+
+
+##DESeq analysis
+
+load the packages
+setup DEseq object
+run DESeq
+get results
+
+##Data Visualiszation
+Volcano plot
+
+##Add anotation
+
+add gene symbols 
+
+##Pathway Analysis
