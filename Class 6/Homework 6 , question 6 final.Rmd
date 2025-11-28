@@ -1,0 +1,43 @@
+---
+title: "Homework 6, Question 6"
+author: "Iman Syed a18596789"
+date: "2025-10-28"
+output: pdf_document
+---
+
+Question 6 walkthrough:
+
+Q6. How would you generalize the original code above to work with any set of input
+protein structures?
+
+```{r}
+library(bio3d)
+
+# put any PDB IDs or file names here- in this case- I wanted to condense the repetitive lines of code  for s1,s2,s3
+pdb_ids <- c("4AKE", "1AKE", "1E4Y")
+
+# read, trim, and extract B-factors automatically, similified less repetive version
+pdb_list <- lapply(pdb_ids, read.pdb)
+chain_list <- lapply(pdb_list, function(x) trim.pdb(x, chain = "A", elety = "CA"))
+bfactors <- lapply(chain_list, function(x) x$atom$b)
+
+# common y-range for consistent scale
+yl <- range(unlist(bfactors), na.rm = TRUE)
+
+# plot each protein separately, same as before
+for (i in seq_along(pdb_ids)) {
+  plotb3(bfactors[[i]], 
+         sse = chain_list[[i]], 
+         typ = "l", 
+         ylab = "B-factor", 
+         ylim = yl, 
+         main = pdb_ids[i])
+}
+
+```
+Comments:
+
+Plots of all the proteins
+
+plotb3() is a B-factor plot that shows how flexible each residue (or atom, if you plot all atoms) is within a protein structure.These B-factor plots show how atomic flexibility varies along the protein chain.
+Comparing several proteins lets you see which regions become more rigid or flexible between structures
