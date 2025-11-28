@@ -1,0 +1,307 @@
+---
+title: "Class 10 mini project"
+author: "Iman Syed 18596789"
+format: pdf
+
+
+---
+
+
+As it is nearly halloween and the way point in the quarter let's do a mini project to help us find the best candy!
+
+Ours comes from the 538 website and is available as a CSV file:
+
+```{r}
+
+candy <- read.csv ("candy-data.csv", row.names= 1)
+
+head(candy)
+```
+Q1. How many different candy types are in this dataset?
+
+
+```{r}
+library (tidyverse)
+candy |>
+  nrow()
+```
+
+
+Q2. How many fruity candy types are in the dataset?
+
+```{r}
+sum(candy$fruity)
+```
+
+My favorite winpercent
+
+```{r}
+candy["Almond Joy",]$winpercent
+```
+
+```{r}
+
+library(dplyr)
+
+candy|>
+  filter (rownames(candy)== "Almond Joy") |>
+  select(winpercent)
+
+
+
+```
+
+##Quick overview of the dataset
+
+```{r}
+
+skimr::skim(candy)
+
+```
+
+
+Q3. What is your favorite candy in the dataset and what is it’s winpercent value?
+Q4. What is the winpercent value for “Kit Kat”?
+Q5. What is the winpercent value for “Tootsie Roll Snack Bars”?
+
+Q6. Is there any variable/column that looks to be on a different scale to the majority of the other columns in the dataset?
+Q7. What do you think a zero and one represent for the candy$chocolate column?
+
+
+
+Q8. Plot a histogram of winpercent values
+
+```{r}
+library(ggplot2)
+
+ggplot(candy)+
+  aes(winpercent)+
+  geom_histogram(bins=20)
+```
+
+
+Q9. Is the distribution of winpercent values symmetrical?
+
+```{r}
+ggplot(candy)+
+  aes(winpercent)+
+  geom_density()
+```
+
+
+Q10. Is the center of the distribution above or below 50%?
+
+```{r}
+mean(candy$winpercent)
+```
+
+
+```{r}
+summary(candy$winpercent)
+```
+
+
+Q11. On average is chocolate candy higher or lower ranked than fruit candy?
+
+```{r}
+#1.Find all chocolates candy in the dataset
+#2 Find their winpercent values
+#3 Calculate the mean of these values
+#4-6. Do the same for fruity candy
+#7 Compare mean winpercent of the chocolate vs. fruity
+#8 Pick the highest as the winner
+
+choc.inds <- candy$chocolate==1
+choc.wins <- candy[choc.inds,]$winpercent
+choc.mean <- mean(choc.wins)
+choc.mean
+
+```
+```{r}
+mean(candy[candy$chocolate==1,]$winpercent)
+```
+```{r}
+mean(candy[candy$fruity==1,]$winpercent)
+
+fruit.ind <- candy$fruity==1
+fruit.wim <- candy[fruit.ind,]$winpercent
+fruit.mean <- mean(fruit.wim)
+fruit.mean
+
+```
+
+```{r}
+candy|>
+  filter(chocolate==1) |>
+  select(winpercent)
+
+```
+
+
+
+Q12. Is this difference statistically significant?
+
+```{r}
+t.test(choc.wins, fruit.wim)
+
+
+```
+
+
+
+13.
+
+```{r}
+candy|>
+  arrange(winpercent) |>
+  head(5)
+
+```
+
+
+```{r}
+ord.ind <- order(candy$winpercent)
+head(candy[ord.ind,],5)
+```
+
+
+
+15. make a first barplot of candy ranking based on winpercent values:
+
+```{r}
+ggplot(candy)+
+  aes(winpercent,rownames(candy))+
+  geom_col()
+
+```
+
+
+
+16.
+```{r}
+ggplot(candy) +
+  aes(x = winpercent, y = reorder(rownames(candy), winpercent)) +
+  geom_col()
+
+```
+
+add some color base on
+
+```{r}
+my_cols <- rep("black", nrow(candy))
+my_cols[as.logical(candy$chocolate)] <- "chocolate"
+my_cols[as.logical(candy$frutiy)] <- "purple"
+my_cols[as.logical(candy$bar)] <- "blue"
+my_cols
+
+```
+
+
+
+```{r}
+
+ggplot(candy) + 
+  aes(winpercent, reorder(rownames(candy),winpercent)) +
+  geom_col(fill=my_cols) + 
+  
+
+```
+Now, for the first time, using this plot we can answer questions like:
+- Q17. What is the worst ranked chocolate candy?
+Whoppers!
+
+- Q18. What is the best ranked fruity candy?
+
+Airheads!
+
+
+
+##Winpercent and Pricepercent
+A plot  with both variables/columns winpercent and pricepercent
+
+```{r}
+ggplot(candy)+
+  aes(x=winpercent, y=pricepercent,
+      label= rownames(candy)) +
+  geom_point(col=my_cols)+
+  geom_text()
+```
+
+
+
+
+
+
+```{r}
+
+library(ggrepel)
+
+ggplot(candy)+
+  aes(x=winpercent, y=pricepercent,
+      label= rownames(candy)) +
+  geom_point(col=my_cols)+
+  geom_text_repel()
+
+```
+
+##Exploring correlation structure
+
+
+
+
+```{r}
+library(corrplot)
+cij <- cor(candy)
+cij
+```
+
+##Principal Component Analysis
+
+The function to use is called 'prcom()' with an optional "scale" arguement
+
+```{r}
+pca<-prcomp(candy, scale= TRUE)
+
+summary(pca)
+```
+
+```{r}
+ggplot(pca$x)+
+  aes(PC1, PC2, label= rownames(pca$x))+
+  geom_point(col= my_cols)+
+  geom_text(col=my_cols)
+
+```
+
+We should also examine the variable "loadings" or contributions of the original variables to new PCs
+
+```{r}
+ggplot(pca$rotation) +
+  aes(PC1, rownames(pca$rotation))+
+  geom_col()
+```
+
+##5 Exploring the correlation structure
+Now that we’ve explored the dataset a little, we’ll see how the variables interact with one another. We’ll use correlation and view the results with the corrplot package to plot a correlation matrix.
+
+
+```{r}
+library(corrplot)
+
+cij <- cor(candy)
+corrplot(cij)
+```
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
