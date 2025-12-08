@@ -8,7 +8,7 @@ format: html
 
 ##Section 1: Identify genetic variants of interest
 
-There are a number of gene variants associated with childhood asthma. A study from Verlaan
+There are a number of gene variants associated with childhood asthma, it is important that we learn about them so we can can understand the disease better. A study from Verlaan
 et al. (2009) shows that 4 candidate SNPs demonstrate significant evidence for association.
 You want to find out what they are by visiting OMIM (http://www.omim.org) and locating the
 Verlaan et al. paper description.
