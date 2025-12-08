@@ -220,3 +220,7 @@ ggplot(gapminder)+
 ```
 Q6: What are the main advantages of ggplot over base R plot?
 
+
+The main advantages of ggplot2 over base R plotting are its use of a consistent grammar of graphics, its ability to easily layer multiple plot elements, and its production of publication-quality figures with minimal manual adjustment. ggplot2 works seamlessly with data frames and tidyverse tools, making data visualization more intuitive and reproducible. In contrast, base R plotting is less modular, requires more manual customization, and uses different syntax for different plot types.
+
+

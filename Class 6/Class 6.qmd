@@ -1,7 +1,7 @@
 ---
 title: "Class 06: R Studio Functions"
 author: "Iman Syed (A18596789)"
-format: pdf
+format: gfm
 ---
 
 All functions in R have at least 3 things:

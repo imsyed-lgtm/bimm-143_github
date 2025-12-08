@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+# Ignore rendered and temporary files
+*_files/
+*.html
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.svg

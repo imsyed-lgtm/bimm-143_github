@@ -1,0 +1,23 @@
+---
+title: "Class 04"
+author: "Iman Syed A18596789"
+format: html
+---
+
+#plot from week 4
+
+```{r}
+x <- 1:50
+
+plot(x,sin(x))
+```
+
+
+#making it girlier ehehe!
+
+```{r}
+plot(x,sin(x),typ="l", col="purple", lwd=1.5, xlab= "My Anxiety levels")
+
+```
+
+
