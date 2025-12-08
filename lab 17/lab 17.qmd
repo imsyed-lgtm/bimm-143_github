@@ -1,0 +1,106 @@
+---
+title: "lab 17"
+author: "iman syed 18596789"
+format: html
+---
+
+
+
+##Section 1: Identify genetic variants of interest
+
+There are a number of gene variants associated with childhood asthma. A study from Verlaan
+et al. (2009) shows that 4 candidate SNPs demonstrate significant evidence for association.
+You want to find out what they are by visiting OMIM (http://www.omim.org) and locating the
+Verlaan et al. paper description.
+
+Here we read the CSV file drived from Ensembl
+
+
+```{r}
+mxl <- read.csv("MXL.csv")
+head(mxl)
+```
+
+```{r}
+table(mxl$Genotype..forward.strand.)/nrow(mxl)*100
+```
+Let us look at a separate population:
+
+Read in the file for GBR
+
+
+```{r}
+gbr <- read.csv("GBR.csv")
+head(gbr)
+```
+
+
+Find proporton of G|G
+
+```{r}
+round(table(gbr$Genotype..forward.strand.)/nrow(gbr)* 100, 2 )
+```
+
+
+The variant that is associated with childhood asthma is more frequent in GBR populations than the MKL population.
+
+
+##Section 4 :Population scale analysis
+
+One sample is obviously not enough to know what is happening in a population. You are
+interested in assessing genetic differences on a population scale. So, you processed about
+~230 samples and did the normalization on a genome level. Now, you want to find whether
+there is any association of the 4 asthma-associated SNPs (rs8067378…) on ORMDL3
+expression.
+
+Q13: Read this file into R and determine the sample size for each genotype and their
+corresponding median expression levels for each of these genotypes:
+
+```{r}
+expres <-read.table("rs8067378_ENSG00000172057.6.txt")
+head(expres)
+
+```
+
+```{r}
+nrow(expres)
+```
+A13: a) There are 462 samples
+
+
+```{r}
+table(expres$geno)
+```
+A13: b) median expression levels for each of these genotype  A/A 108   A/G    233  G/G 121
+
+```{r}
+library(ggplot2)
+```
+
+
+
+
+let's make a plot:
+
+Q14: Generate a boxplot with a box per genotype, what could you infer from the relative
+expression value between A/A and G/G displayed in this plot? Does the SNP effect the
+expression of ORMDL3?
+
+```{r}
+ggplot(expres)+ aes(geno,exp,fill=geno)+
+  geom_boxplot(notch= TRUE)
+```
+
+
+A14: We can see that this location the relative expression value of the A/A genotype is the highest whilst G/G has the lowest expression value. This suggests that this SNP does affect the expression of the ORMDL3.
+ 
+
+
+
+
+
+
+
+
+
+

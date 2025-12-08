@@ -1,0 +1,266 @@
+---
+title: "Class 19"
+author: "Iman Syed A18596789"
+format: html
+---
+
+
+
+##Background
+Pertussis (more commonly known as whooping cough) is a highly contagious respiratory disease caused by the bacterium Bordetella pertussis (Figure 1). People of all ages can be infected leading to violent coughing fits followed by a characteristic high-pitched “whoop” like intake of breath. 
+
+
+
+```{r}
+
+#install packages (data pasta), use add ins to paste list from clipboard
+
+cdc <- data.frame (
+  
+)
+
+```
+
+plot of cases per year for Pertussis in the US
+
+```{r}
+library(ggplot2)
+
+ggplot(cdc) +
+  aes(year,cases) +
+  geom_point()+
+  geom_line()
+
+#should see line graph
+
+
+
+```
+
+
+Add some major milestone timepoints to our plot:
+
+```{r}
+
+ggplot(cdc) +
+  aes(year,cases) +
+  geom_point()+
+  geom_line()+
+  geom_vline(xintercept = 1947, col= "darkgreen")+
+  geom_vline(xintercept = 1996, col= "red")+
+  geom_vline(xintercept = 2020, col= "blue")
+  
+
+
+  
+
+```
+
+
+
+The full introduction of the mandatory wP(whole-cell) Pertussis immunization in the mid 1940s lead to dramatic reduction in case numbers (from over 200,000 to 100s)
+
+The switch to the aP(newer acellular) formalization
+
+the 2020 lock-downs and social distancing measures...
+
+
+##The CMI-PB project
+
+The mission of CMI-PB is to provide the scientific community with a comprehensive, high-quality and freely accessible resource of Pertussis booster vaccination.
+
+website: https://www.cmi-pb.org/
+
+They make their data available via JSON format API endpoints- basically the database tables in a key:value type format "infancy_vac" : "wP". To reas this we can use the read'read_json()' function from the **jsonlite** package. install with install.packages("jsonlite")
+
+
+
+```{r}
+library(jsonlite)
+
+subject <- read_json(path="http://cmi-pb.org/api/v5_1/subject", simplifyVector = TRUE)
+
+head(subject)
+```
+
+>Q. how many "subjects"/individuals are in this data set?
+
+```{r}
+nrow(subject)
+```
+
+
+
+
+>Q. How many wP and aP subjects are there
+
+
+```{r}
+
+table(subject$infancy_vac)
+
+
+```
+
+>Q. What is the breakdown by the "biological sex" and "race"?
+
+```{r}
+table(subject$biological_sex)
+
+```
+```{r}
+table(subject$race)
+```
+
+
+```{r}
+table(subject$race, subject$biological_sex)
+```
+This breakdown is not particulary representative of the US population this is a serious cavet for this study. However, it is still the largeest same of its type assembles:
+
+
+
+
+```{r}
+specimen <- read_json("http://cmi-pb.org/api/v5_1/specimen")
+
+
+
+head(specimen)
+
+```
+
+
+We need to "join" or link these tables with the 'subject' table so we can begin-
+
+```{r}
+library(dplyr)
+
+meta <- inner_join(subject,specimen)
+
+head(meta)
+
+
+```
+
+
+Nw let's join the 'ab_titer' table with our 'meta' table so we have all informations about a given Ab measurment
+
+```{r}
+ab_data <- inner_join(meta,ab_titer)
+
+head(ab_data)
+
+```
+
+
+>Q. How many Ab measurements do we have in total
+
+```{r}
+nrow(ab_data)
+```
+
+
+>Q. How many different isotypes (types of Ab) are in the data set
+
+```{r}
+unique(ab_data$isootype)
+```
+
+
+
+
+>Q. How many different antigens?
+
+```{r}
+unique(ab_data$antigen)
+```
+
+
+
+```{r}
+ggplot(ab_data)+
+  aes(MFI,antigen)+
+  geom_boxplot()
+```
+
+
+
+
+
+IgG is crucial for long term immunity and responding to bacterial& viral infections
+
+```{r}
+igg <- ab_data |>
+  filter(isotype=="IgG")
+
+```
+
+
+
+
+
+
+```{r}
+ggplot(igg)+
+  aes(MFI_normalized, antigen)+
+  geom_boxplot()
+```
+
+
+We can "facet" our plot by wP vs aP
+
+```{r}
+ggplot(igg)+
+  aes(MFI_normalized, antigen, col=infancy_vac)+
+  geom_boxplot()+
+  facet_wrap(~infancy_vac)  
+```
+
+
+
+
+```{r}
+ggplot(igg) +
+  aes(MFI_normalised, antigen, col=infancy_vac ) +
+  geom_boxplot(show.legend = FALSE) + 
+  facet_wrap(vars(visit), nrow=2) +
+  xlim(0,75) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+More advances  analysis digging into individual antigen response over time:
+
+```{r}
+filter(igg, antigen== "PT", dataset=="2021") %>%
+  ggplot() +
+  aes(x=planned_day_relative_to_boost,
+      y=MFI_normalised,
+      col=infancy_vac, group = subject_id) +
+  
+  geom_point()+ geom_line()+ Geom_vline(xintercept=14, linestype= "dashed")
+```
+
+
+
+
+#write here what you can interpret from these graphs
+
+This plot shows the time course of Pertussis toxin(PT) antibody responses for a large set of wP (teal color) and aP (red color) individuals. Levels peak at day 14 and are larger in magnitude for wP than aP individuals
+
+There are lots of cool thinsg to explore in this data set and we need coding and biology knowlegde to do it effectively.
+
+
+
+
+
+
+
+
+
