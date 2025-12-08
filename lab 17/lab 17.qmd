@@ -80,7 +80,7 @@ library(ggplot2)
 
 
 
-let's make a plot:
+let's make a plot with colours:
 
 Q14: Generate a boxplot with a box per genotype, what could you infer from the relative
 expression value between A/A and G/G displayed in this plot? Does the SNP effect the
